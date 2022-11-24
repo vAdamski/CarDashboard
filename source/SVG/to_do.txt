@@ -1,0 +1,10 @@
+1. Start Stop graphic 
+2. Check engine 
+3. ABS 
+4. lights
+5. oil 
+6. temp 
+7. traction 
+8. oil reserve
+9. esp 
+10. warning
