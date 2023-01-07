@@ -155,19 +155,26 @@ while True:
     # Engine start/stop
     if isRunning:
         if not isTurningOff:
+            # Tu kod dla działającego silnika
+
             if gasPedalRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0]:
+                # Zwerownaie rpm jesli pedal nie jest nacisniety
                 angle_rpm -= 10
                 if angle_rpm < rpmMax:
                     angle_rpm = rpmMax
             elif angle_rpm < -25:
                 angle_rpm += 2
 
+            # Dalszy kod działajacego silnika
+
 
             # Turning off procedure
+            # Przycisk stop start -> Tutaj jest wyłaczanie auta -> trzeba dodac zerownaie kph
             if startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0] and not isTurningOff:
                 isTurningOff = True
                 time.sleep(0.2)
         else:
+            # Wyłaczanie auta
             if angle_speed <= 120:
                 angle_speed += 10
                 if angle_speed >= speedMin:
@@ -182,32 +189,40 @@ while True:
         # Starting procedure
         # TODO: Take it to another function
         if isStarting:
+            # Odpal wszystkie ikonki
             iconsState = turnOnAllIcons()
+            # Tutaj mamy zwiększanie wskazowek kph do max poziomu
             if angle_speed >= speedMax and startingStageSpeed == 0:
                 angle_speed -= 9.68
                 if angle_speed <= speedMax:
                     startingStageSpeed = 1
 
+            # Gdy osiagnie max poziom zmniejsz je do poziomu 0kph
             elif angle_speed <= 32 and startingStageSpeed == 1:
                 angle_speed += 9.68
                 if angle_speed >= 32:
                     startingStageSpeed = 2
 
+            # Tutaj mamy zwiększanie wskazowek rpm do max poziomu
             if angle_rpm >= rpmMax and startingStageRpm == 0:
                 angle_rpm -= 9.4
                 if angle_rpm <= rpmMax:
                     startingStageRpm = 1
 
+            # Gdy osiagnie max poziom zmniejsz je do poziomu 1000rpm
             elif angle_rpm <= -25 and startingStageRpm == 1:
                 angle_rpm += 9.4
                 if angle_rpm >= -25:
                     startingStageRpm = 2
 
+            # Jesli oba zegary sprawdzily sie uruchom silnik i i wylacz procedure startu
             if startingStageSpeed == 2 and startingStageRpm == 2 and isStarting and not isRunning:
                 startingStageRpm = 0
                 startingStageSpeed = 0
+                # wyłacz prodedure startu i wlacz silnik
                 isStarting = False
                 isRunning = True
+                # wylacz ikonki
                 iconsState = turnOffAllIcons()
 
 
