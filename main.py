@@ -1,11 +1,15 @@
 import pygame
 import time
 import asyncio
+import pyglet
 from sys import exit
 
 
 # ======================================================================================================================
 # Additional functions
+from tkinter import *
+
+
 def turnOnAllIcons():
     return (True, True, True, True, True, True, True, True, True)
 def turnOffAllIcons():
@@ -16,6 +20,8 @@ def blitRotate(surf, image, pos, angle=0):
 
     # offset from pivot to center
     image_rect = image.get_rect(topleft=(pos[0] - w/2, pos[1] - h/2))
+    #fix image_rect center of image
+
     offset_center_to_pivot = pygame.math.Vector2(pos) - image_rect.center
 
     # roatated offset from pivot to center
@@ -30,7 +36,15 @@ def blitRotate(surf, image, pos, angle=0):
 
     # rotate and blit the image
     surf.blit(rotated_image, rotated_image_rect)
-
+    pygame.draw.rect(surf, (255, 0, 0), (rotated_image_rect.topleft, rotated_image.get_size()), 2)
+def rot_center(image, angle):
+    """rotate an image while keeping its center and size"""
+    orig_rect = image.get_rect()
+    rot_image = pygame.transform.rotate(image, angle)
+    rot_rect = orig_rect.copy()
+    rot_rect.center = rot_image.get_rect().center
+    rot_image = rot_image.subsurface(rot_rect).copy()
+    return rot_image
 
 def dispalyPosition(positionInPrecent=(0, 0)) -> tuple:
     return screen.get_width() * positionInPrecent[0] / 100, screen.get_height() * positionInPrecent[1] / 100
@@ -78,10 +92,10 @@ startStopButtonRect = startStopButton.get_rect(topleft = (1550, 50))
 clocksBackground = pygame.image.load('source/PNG/clocks.png')
 clocksBackground = pygame.transform.scale(clocksBackground, (1920, 1080))
 pointer_rpm = pygame.image.load('source/PNG/arrow.png')
-pointer_rpm = pygame.transform.scale(pointer_rpm, (300, 300))
+pointer_rpm = pygame.transform.scale(pointer_rpm, (500, 500))
 
 pointer_speed = pygame.image.load('source/PNG/arrow.png')
-pointer_speed = pygame.transform.scale(pointer_speed, (500, 500))
+pointer_speed = pygame.transform.scale(pointer_speed, (300, 300))
 
 gasPedal = pygame.image.load('source/PNG/pedals.png')
 gasPedal = pygame.transform.scale(gasPedal, (600, 600))
@@ -111,6 +125,9 @@ iconsState = (False, False, False, False, False, False, False, False, False)
 # iconsState = turnOnAllIcons()
 # ======================================================================================================================
 
+# make a second window using pyglet library
+
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -124,8 +141,8 @@ while True:
 
     # Wskazowka i zegar
     screen.blit(clocksBackground, (0,0))
-    blitRotate(screen, pointer_rpm, (576,561), angle_speed)
-    blitRotate(screen, pointer_speed, (997, 558), angle_rpm)
+    blitRotate(screen, pointer_speed, (581,565), angle_speed)
+    blitRotate(screen, pointer_rpm, (997, 558), angle_rpm)
 
     # Ikonki
     if iconsState[0]:
