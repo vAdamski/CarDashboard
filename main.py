@@ -1,6 +1,5 @@
-import time
-
 import pygame
+import time
 import asyncio
 from sys import exit
 
@@ -48,6 +47,7 @@ angle_rpm = -5
 pygame.init()
 screen = pygame.display.set_mode((displaySizeWidth, displaySizeHeight))
 pygame.display.set_caption('CarDashboard')
+
 clock = pygame.time.Clock()
 
 # ======================================================================================================================
@@ -83,12 +83,13 @@ pointer_rpm = pygame.transform.scale(pointer_rpm, (300, 300))
 pointer_speed = pygame.image.load('source/PNG/arrow.png')
 pointer_speed = pygame.transform.scale(pointer_speed, (500, 500))
 
-gasPedal = pygame.Surface((200, 600))
-gasPedal.fill('Red')
-gasPedalRect = gasPedal.get_rect(topleft=(1600, 400))
+gasPedal = pygame.image.load('source/PNG/pedals.png')
+gasPedal = pygame.transform.scale(gasPedal, (600, 600))
+gasPedalRect = gasPedal.get_rect(topleft=(1300, 400))
 
 breakPedal = pygame.Surface((200, 400))
-breakPedal.fill('Red')
+#make breakpedal transparent
+breakPedal.set_colorkey((0, 0, 0))
 breakPedalRect = gasPedal.get_rect(topleft=(1350, 600))
 
 # ======================================================================================================================
