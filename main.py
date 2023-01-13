@@ -1,7 +1,5 @@
 import pygame
 import time
-import asyncio
-import pyglet
 from sys import exit
 
 
@@ -36,7 +34,8 @@ def blitRotate(surf, image, pos, angle=0):
 
     # rotate and blit the image
     surf.blit(rotated_image, rotated_image_rect)
-    pygame.draw.rect(surf, (255, 0, 0), (rotated_image_rect.topleft, rotated_image.get_size()), 2)
+    # pygame.draw.rect(surf, (255, 0, 0), (rotated_image_rect.topleft, rotated_image.get_size()), 2)
+
 def rot_center(image, angle):
     """rotate an image while keeping its center and size"""
     orig_rect = image.get_rect()
@@ -142,7 +141,7 @@ while True:
     # Wskazowka i zegar
     screen.blit(clocksBackground, (0,0))
     blitRotate(screen, pointer_speed, (581,565), angle_speed)
-    blitRotate(screen, pointer_rpm, (997, 558), angle_rpm)
+    blitRotate(screen, pointer_rpm, (980, 558), angle_rpm)
 
     # Ikonki
     if iconsState[0]:
@@ -178,6 +177,7 @@ while True:
             if gasPedalRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0]:
                 # Zwerownaie rpm jesli pedal nie jest nacisniety
                 angle_rpm -= 10
+                angle_speed -= 10
                 if angle_rpm < rpmMax:
                     angle_rpm = rpmMax
             elif angle_rpm < -25:
@@ -197,9 +197,15 @@ while True:
                 angle_speed += 10
                 if angle_speed >= speedMin:
                     angle_speed = speedMin
-                    isRunning = False
-                    isTurningOff = False
-                    iconsState = turnOffAllIcons()
+
+            if angle_rpm <= -25:
+                angle_rpm += 10
+
+
+
+            isRunning = False
+            isTurningOff = False
+            iconsState = turnOffAllIcons()
 
     else:
         if startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0] and not isStarting:
