@@ -5,9 +5,6 @@ from sys import exit
 
 # ======================================================================================================================
 # Additional functions
-from tkinter import *
-
-
 def turnOnAllIcons():
     return (True, True, True, True, True, True, True, True, True)
 def turnOffAllIcons():
@@ -180,10 +177,17 @@ while True:
                 angle_speed -= 10
                 if angle_rpm < rpmMax:
                     angle_rpm = rpmMax
-            elif angle_rpm < -25:
+                if angle_speed < speedMax:
+                    angle_speed = speedMax
+
+            if angle_rpm < -25:
                 angle_rpm += 2
+            if angle_speed <= speedMin:
+                angle_speed += 1
 
             # Dalszy kod działajacego silnika
+
+
 
 
             # Turning off procedure
