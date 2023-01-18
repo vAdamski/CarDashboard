@@ -132,6 +132,14 @@ sport = pygame.transform.scale(sport, (300, 300))
 comfort = pygame.image.load('source/PNG/comfort.png')
 comfort = pygame.transform.scale(comfort, (300, 300))
 
+# Wykres temperatury
+temp1 = pygame.image.load('source/PNG/tempLine_1.png')
+temp1 = pygame.transform.scale(temp1, (300, 300))
+temp2 = pygame.image.load('source/PNG/tempLine_2.png')
+temp2 = pygame.transform.scale(temp2, (300, 300))
+temp3 = pygame.image.load('source/PNG/tempLine_3.png')
+temp3 = pygame.transform.scale(temp3, (300, 300))
+
 
 # Sound init
 kierunek_sound = pygame.mixer.Sound("source/SOUND/kierunek_sound.mp3")
@@ -146,10 +154,13 @@ speedMin = 32
 speedMax = -210
 rpmMin = -5
 rpmMax = -230
+tempLvl = 1
+tempLvlCounter = 0
+tempLvlCounterAddAfter = 300
 carMode = 0
 fuelLvl = 6
 counter = 0
-counterFuel = 150
+counterFuel = 300
 isRunning = False
 isRunningSoundFlag = False
 isStarting = False
@@ -295,6 +306,17 @@ while True:
         if carMode == 2:
             screen.blit(comfort, (100, 350))
 
+    # Wykres temperatury
+    if isRunning:
+        if tempLvl == 0:
+            pass
+        if tempLvl == 1:
+            screen.blit(temp1, (1265, 580))
+        if tempLvl == 2:
+            screen.blit(temp2, (1265, 580))
+        if tempLvl == 3:
+            screen.blit(temp3, (1265, 580))
+
     # Logika aplikacji
     # Engine start/stop
     if isRunning:
@@ -328,6 +350,13 @@ while True:
                 fuelLvl -= 1
                 counter = 0
 
+            # Zwiekszenie poziomu temperatury plynu chlodniczego
+            tempLvlCounter += 1
+            if tempLvlCounter > tempLvlCounterAddAfter:
+                tempLvl = 2
+
+            if iconsState[6]:
+                tempLvl = 3
 
             # Obsluga kierukowskazow
             kirunkowskaz_iterator += 1
@@ -363,6 +392,7 @@ while True:
             pracaSilnika.stop()
             isTurningOff = False
             iconsState = turnOffAllIcons()
+            tempLvl = 1
             if isTurningOffSoundFlag == False:
                 stopSilnika.play()
                 isTurningOffSoundFlag = True
