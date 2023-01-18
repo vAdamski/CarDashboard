@@ -202,8 +202,9 @@ while True:
                 if angle_speed >= speedMin:
                     angle_speed = speedMin
 
-            if angle_rpm <= -25:
-                angle_rpm += 10
+
+            angle_rpm = rpmMin
+            angle_speed = speedMin
 
 
 
