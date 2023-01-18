@@ -49,6 +49,9 @@ def dispalyPosition(positionInPrecent=(0, 0)) -> tuple:
 def drawError(iconsState: tuple) -> tuple:
     tupelAsList = list(iconsState)
     rand = bool(random.getrandbits(1))
+    # pominiecie rezerwy bo odpala sie gdy lvl paliwa = 1 / 0
+    if rand == 5:
+        pass
     x = len(tupelAsList)
     value = random.randint(0, x-1)
     tupelAsList[value] = rand
@@ -150,36 +153,36 @@ pracaSilnika = pygame.mixer.Sound("source/SOUND/PracaSilnika.mp3")
 
 # ======================================================================================================================
 # Engine parameters
-speedMin = 32
-speedMax = -210
-rpmMin = -5
-rpmMax = -230
-tempLvl = 1
-tempLvlCounter = 0
-tempLvlCounterAddAfter = 300
-carMode = 0
-fuelLvl = 6
-counter = 0
-counterFuel = 300
-isRunning = False
-isRunningSoundFlag = False
-isStarting = False
-isStartingSoundFlag = False
-startingStageSpeed = 0
-startingStageRpm = 0
-isTurningOff = False
-isTurningOffSoundFlag = False
-kierunek_prawy = False
-kierunek_prawy_pokaz = False
-kierunek_lewy = False
-kierunek_lewy_pokaz = False
-kirunkowskaz_iterator = 0
-kirunkowskaz_iterator_max = 15
-kierunek_sound_flag = False
+speedMin = 32 # Minimalne polozenie wskazowki predkosci w stopniach
+speedMax = -210 # Maksymalne polozenie wskazowki predkosci w stopniach
+rpmMin = -5 # Minimalne polozenie wskazowki obrotow w stopniach
+rpmMax = -230 # maksymalne polozenie wskazowki obrotow w stopniach
+tempLvl = 1 # Poziom temperatury plynu chlodniczego
+tempLvlCounter = 0 # Counter zwiekszany o 1 co kazdy tick programu
+tempLvlCounterAddAfter = 300 # Zwiekszanie poziomu temperatury plynu do lvl 2 po x tickach programu , jesli wystepuje informacja o przegraniu to poziom wzrasta do 3
+carMode = 0 # Program auta: ECO, COMFORT, SPORT
+fuelLvl = 6 # Poziom paliwa
+counter = 0 # Counter zwiekszany o 1 co kazdy tick programu
+counterFuel = 300 # Co ile tickow ma sie zmniejszyc poziom paliwa
+isRunning = False # Flaga czy silnik aktulanie pracuje
+isRunningSoundFlag = False # Flaga pozwlajaca odpalic dzwiek pracy silnia tyko raz (w petli nieskonczonej petli az do wylaczenia silnika)
+isStarting = False # Flaga informujaca ze jest wykonywany start silnika
+isStartingSoundFlag = False # Flaga pozwlajaca odpalic dzwiek staru silnia tyko raz
+startingStageSpeed = 0 #  Falaga pomocnicza do algorytmu obrotu wskazowki predkosci przy starcie auta
+startingStageRpm = 0 #  Falaga pomocnicza do algorytmu obrotu wskazowki obrotow przy starcie auta
+isTurningOff = False # Flaga informujaca ze jest wykonywany stop silnika
+isTurningOffSoundFlag = False # Flaga pozwlajaca odpalic dzwiek stopu silnia tyko raz
+kierunek_prawy = False # Flaga czy jest wlaczony migacz prawy
+kierunek_prawy_pokaz = False # Flaga czy jest pokazywany migacz prawy (flaga zmienia sie co kirunkowskaz_iterator_max)
+kierunek_lewy = False # Flaga czy jest wlaczony migacz lewy
+kierunek_lewy_pokaz = False # Flaga czy jest pokazywany migacz lewy (flaga zmienia sie co kirunkowskaz_iterator_max)
+kirunkowskaz_iterator = 0 # Counter do migania kierunkowskazu
+kirunkowskaz_iterator_max = 15 # Co ile tickow wlaczyc / wylaczyc ikonke kierunkowskazu
+kierunek_sound_flag = False # Flaga odpala dzwiek migacza w petli az zaden migacz nie jest uruchomiony
 
-# Icons
+# Icons - statusy ikon bledow (abs, checkEngine, esp, lights, oil, reserve, temp, traction, warning)
 iconsState = (False, False, False, False, False, False, False, False, False)
-# iconsState = turnOnAllIcons()
+
 # ======================================================================================================================
 
 # make a second window using pyglet library
@@ -193,8 +196,7 @@ while True:
 
         # Obsluga klawiatury
         if event.type == pygame.KEYDOWN:
-            # Kierunkowskazy
-            # Lewy
+            # Kierunkowskaz Lewy
             if event.key == pygame.K_LEFT:
                 if debug == True:
                     print("Key K_LEFT has been pressed")
@@ -202,7 +204,7 @@ while True:
                 if kierunek_prawy:
                     kierunek_prawy = not kierunek_prawy
 
-            # Prawy
+            # Kierunkowskaz Prawy
             if event.key == pygame.K_RIGHT:
                 if debug == True:
                     print("Key K_RIGHT has been pressed")
@@ -224,24 +226,27 @@ while True:
                 if carMode == 3:
                     carMode = 0
 
+            # Zmiana trybu auta
             if event.key == pygame.K_UP and isRunning:
                 carMode -= 1
                 if carMode == -1:
                     carMode = 2
 
+
+    # Pobranie pozycji myszki
     mousePos = pygame.mouse.get_pos()
 
     # Draw all our elements
-
     # Wskazowka i zegar
     screen.blit(clocksBackground, (0,0))
     blitRotate(screen, pointer_speed, (581,565), angle_speed)
     blitRotate(screen, pointer_rpm, (980, 558), angle_rpm)
 
+    # Pedal Gazu
     screen.blit(gasPedal, gasPedalRect)
     screen.blit(startStopButton, startStopButtonRect)
 
-    # Ikonki
+    # Ikonki bledow
     if iconsState[0]:
         screen.blit(abs, (1254, 371))
     if iconsState[1]:
@@ -252,7 +257,7 @@ while True:
         screen.blit(lights, (1450, 371))
     if iconsState[4]:
         screen.blit(oil, (1302, 393))
-    if iconsState[5]:
+    if (fuelLvl == 0 or fuelLvl == 1) and isRunning:
         screen.blit(reserve, (1402, 356))
     if iconsState[6]:
         screen.blit(temp, (1402, 390))
