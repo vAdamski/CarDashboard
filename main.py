@@ -48,13 +48,13 @@ def dispalyPosition(positionInPrecent=(0, 0)) -> tuple:
 
 # ======================================================================================================================
 # Pygame init
-debug = True
+debug = False
 displaySizeWidth = 1920
 displaySizeHeight = 1080
 angle_speed = 32
 angle_rpm = -5
 
-pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode((displaySizeWidth, displaySizeHeight))
 pygame.display.set_caption('CarDashboard')
 
@@ -81,6 +81,10 @@ traction = pygame.image.load('source/PNG/Traction.png')
 traction = pygame.transform.scale(traction, (40, 40))
 warning = pygame.image.load('source/PNG/Warning.png')
 warning = pygame.transform.scale(warning, (40, 40))
+kierunkowskaz_prawy = pygame.image.load('source/PNG/kierunek.png')
+kierunkowskaz_prawy = pygame.transform.scale(kierunkowskaz_prawy, (200, 200))
+kierunkowskaz_lewy = pygame.image.load('source/PNG/kierunek.png')
+kierunkowskaz_lewy = pygame.transform.scale(kierunkowskaz_lewy, (200, 200))
 startStopButton = pygame.image.load('source/PNG/StartStopButton.png')
 startStopButton = pygame.transform.scale(startStopButton, (300, 300))
 startStopButtonRect = startStopButton.get_rect(topleft = (1550, 50))
@@ -102,6 +106,11 @@ breakPedal = pygame.Surface((200, 400))
 breakPedal.set_colorkey((0, 0, 0))
 breakPedalRect = gasPedal.get_rect(topleft=(1350, 600))
 
+
+# Sound init
+kierunek_sound = pygame.mixer.Sound("source/SOUND/kierunek_sound.mp3")
+klakson = pygame.mixer.Sound("source/SOUND/Cutlass80HornMediu PE867510_preview.mp3")
+
 # ======================================================================================================================
 # Engine parameters
 speedMin = 32
@@ -115,6 +124,13 @@ isStarting = False
 startingStageSpeed = 0
 startingStageRpm = 0
 isTurningOff = False
+kierunek_prawy = False
+kierunek_prawy_pokaz = False
+kierunek_lewy = False
+kierunek_lewy_pokaz = False
+kirunkowskaz_iterator = 0
+kirunkowskaz_iterator_max = 15
+kierunek_sound_flag = False
 
 # Icons
 iconsState = (False, False, False, False, False, False, False, False, False)
@@ -129,11 +145,33 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
+        # Obsluga klawiatury
+        if event.type == pygame.KEYDOWN:
+            # Kierunkowskazy
+            # Lewy
+            if event.key == pygame.K_LEFT:
+                if debug == True:
+                    print("Key K_LEFT has been pressed")
+                kierunek_lewy = not kierunek_lewy
+                if kierunek_prawy:
+                    kierunek_prawy = not kierunek_prawy
+
+            # Prawy
+            if event.key == pygame.K_RIGHT:
+                if debug == True:
+                    print("Key K_RIGHT has been pressed")
+                kierunek_prawy = not kierunek_prawy
+                if kierunek_lewy:
+                    kierunek_lewy = not kierunek_lewy
+
+            # Klakson
+            if event.key == pygame.K_SPACE:
+                klakson.play()
+
     mousePos = pygame.mouse.get_pos()
 
     # Draw all our elements
-    # Background
-    # screen.blit(bg, (0,0))
 
     # Wskazowka i zegar
     screen.blit(clocksBackground, (0,0))
@@ -159,6 +197,11 @@ while True:
         screen.blit(traction,  (1350, 371))
     # if iconsState[8]:
     #     screen.blit(warning, (990,800))
+    if kierunek_prawy_pokaz and kierunek_prawy:
+        blitRotate(screen, kierunkowskaz_prawy, (1200, 310), 180)
+    if kierunek_lewy_pokaz and kierunek_lewy:
+        blitRotate(screen, kierunkowskaz_lewy, (740, 310), 0)
+
 
     screen.blit(gasPedal, gasPedalRect)
     screen.blit(breakPedal, breakPedalRect)
@@ -188,6 +231,20 @@ while True:
             # Dalszy kod działajacego silnika
 
 
+
+            # Obsluga kierukowskazow
+            kirunkowskaz_iterator += 1
+            if kirunkowskaz_iterator == kirunkowskaz_iterator_max:
+                kierunek_lewy_pokaz = not kierunek_lewy_pokaz
+                kierunek_prawy_pokaz = not kierunek_prawy_pokaz
+                kirunkowskaz_iterator = 0
+
+            if not kierunek_lewy and not kierunek_prawy:
+                kierunek_sound_flag = False
+                kierunek_sound.stop()
+            if (kierunek_prawy or kierunek_lewy) and not kierunek_sound_flag:
+                kierunek_sound.play(loops=-1)
+                kierunek_sound_flag = True
 
 
             # Turning off procedure
