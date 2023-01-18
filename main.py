@@ -1,3 +1,4 @@
+import random
 import pygame
 import time
 from sys import exit
@@ -44,6 +45,14 @@ def rot_center(image, angle):
 
 def dispalyPosition(positionInPrecent=(0, 0)) -> tuple:
     return screen.get_width() * positionInPrecent[0] / 100, screen.get_height() * positionInPrecent[1] / 100
+
+def drawError(iconsState: tuple) -> tuple:
+    tupelAsList = list(iconsState)
+    rand = bool(random.getrandbits(1))
+    x = len(tupelAsList)
+    value = random.randint(0, x-1)
+    tupelAsList[value] = rand
+    return  tuple(tupelAsList)
 
 
 # ======================================================================================================================
@@ -97,9 +106,9 @@ pointer_rpm = pygame.transform.scale(pointer_rpm, (500, 500))
 pointer_speed = pygame.image.load('source/PNG/arrow.png')
 pointer_speed = pygame.transform.scale(pointer_speed, (300, 300))
 
-gasPedal = pygame.image.load('source/PNG/pedals.png')
-gasPedal = pygame.transform.scale(gasPedal, (600, 600))
-gasPedalRect = gasPedal.get_rect(topleft=(1300, 400))
+gasPedal = pygame.image.load('source/PNG/accelerator.png')
+gasPedal = pygame.transform.scale(gasPedal, (200, 600))
+gasPedalRect = gasPedal.get_rect(topleft=(1700, 400))
 
 breakPedal = pygame.Surface((200, 400))
 #make breakpedal transparent
@@ -110,6 +119,9 @@ breakPedalRect = gasPedal.get_rect(topleft=(1350, 600))
 # Sound init
 kierunek_sound = pygame.mixer.Sound("source/SOUND/kierunek_sound.mp3")
 klakson = pygame.mixer.Sound("source/SOUND/Cutlass80HornMediu PE867510_preview.mp3")
+startSilnika = pygame.mixer.Sound("source/SOUND/StartSilnika.mp3")
+stopSilnika = pygame.mixer.Sound("source/SOUND/StopSilnika.mp3")
+pracaSilnika = pygame.mixer.Sound("source/SOUND/PracaSilnika.mp3")
 
 # ======================================================================================================================
 # Engine parameters
@@ -120,10 +132,13 @@ rpmMax = -230
 kph = 0
 gear = 1
 isRunning = False
+isRunningSoundFlag = False
 isStarting = False
+isStartingSoundFlag = False
 startingStageSpeed = 0
 startingStageRpm = 0
 isTurningOff = False
+isTurningOffSoundFlag = False
 kierunek_prawy = False
 kierunek_prawy_pokaz = False
 kierunek_lewy = False
@@ -169,6 +184,10 @@ while True:
             if event.key == pygame.K_SPACE:
                 klakson.play()
 
+            # Losowanie bledow
+            if event.key == pygame.K_RETURN and isRunning:
+                iconsState = drawError(iconsState)
+
     mousePos = pygame.mouse.get_pos()
 
     # Draw all our elements
@@ -211,9 +230,9 @@ while True:
     # Logika aplikacji
     # Engine start/stop
     if isRunning:
+        isStartingSoundFlag = False
         if not isTurningOff:
             # Tu kod dla działającego silnika
-
             if gasPedalRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0]:
                 # Zwerownaie rpm jesli pedal nie jest nacisniety
                 angle_rpm -= 10
@@ -230,6 +249,10 @@ while True:
 
             # Dalszy kod działajacego silnika
 
+            # Dzwiek dzialajacego silnika
+            if isRunningSoundFlag == False:
+                pracaSilnika.play(loops=-1)
+                isRunningSoundFlag = True
 
 
             # Obsluga kierukowskazow
@@ -248,7 +271,7 @@ while True:
 
 
             # Turning off procedure
-            # Przycisk stop start -> Tutaj jest wyłaczanie auta -> trzeba dodac zerownaie kph
+            # Przycisk stop start -> Tutaj jest wyłaczanie auta
             if startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0] and not isTurningOff:
                 isTurningOff = True
                 time.sleep(0.2)
@@ -259,22 +282,27 @@ while True:
                 if angle_speed >= speedMin:
                     angle_speed = speedMin
 
-
             angle_rpm = rpmMin
             angle_speed = speedMin
-
-
-
             isRunning = False
+            isRunningSoundFlag = False
+            pracaSilnika.stop()
             isTurningOff = False
             iconsState = turnOffAllIcons()
+            if isTurningOffSoundFlag == False:
+                stopSilnika.play()
+                isTurningOffSoundFlag = True
 
     else:
+        isTurningOffSoundFlag = False
         if startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0] and not isStarting:
             isStarting = True
         # Starting procedure
-        # TODO: Take it to another function
         if isStarting:
+            if isStartingSoundFlag == False:
+                startSilnika.play()
+                isStartingSoundFlag = True
+
             # Odpal wszystkie ikonki
             iconsState = turnOnAllIcons()
             # Tutaj mamy zwiększanie wskazowek kph do max poziomu
@@ -310,8 +338,8 @@ while True:
                 isRunning = True
                 # wylacz ikonki
                 iconsState = turnOffAllIcons()
-
-
+                # Zresetuj flage dziwieku staru silnika
+                isTurningOffSoundFlag = False
 
     # update everything
     if debug:
