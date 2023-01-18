@@ -110,10 +110,21 @@ gasPedal = pygame.image.load('source/PNG/accelerator.png')
 gasPedal = pygame.transform.scale(gasPedal, (200, 600))
 gasPedalRect = gasPedal.get_rect(topleft=(1700, 400))
 
-breakPedal = pygame.Surface((200, 400))
-#make breakpedal transparent
-breakPedal.set_colorkey((0, 0, 0))
-breakPedalRect = gasPedal.get_rect(topleft=(1350, 600))
+# Ikonki paliwa
+paliwo1 = pygame.image.load('source/PNG/line1_1.png')
+paliwo1 = pygame.transform.scale(paliwo1, (30, 40))
+paliwo2 = pygame.image.load('source/PNG/line1_2.png')
+paliwo2 = pygame.transform.scale(paliwo2, (30, 40))
+paliwo3 = pygame.image.load('source/PNG/line1_2.png')
+paliwo3 = pygame.transform.scale(paliwo3, (30, 40))
+paliwo4 = pygame.image.load('source/PNG/line1_2.png')
+paliwo4 = pygame.transform.scale(paliwo4, (30, 40))
+paliwo5 = pygame.image.load('source/PNG/line1_2.png')
+paliwo5 = pygame.transform.scale(paliwo5, (30, 40))
+paliwo6 = pygame.image.load('source/PNG/line1_3.png')
+paliwo6 = pygame.transform.scale(paliwo6, (30, 40))
+
+
 
 
 # Sound init
@@ -129,8 +140,9 @@ speedMin = 32
 speedMax = -210
 rpmMin = -5
 rpmMax = -230
-kph = 0
-gear = 1
+fuelLvl = 6
+counter = 0
+counterFuel = 150
 isRunning = False
 isRunningSoundFlag = False
 isStarting = False
@@ -221,9 +233,38 @@ while True:
     if kierunek_lewy_pokaz and kierunek_lewy:
         blitRotate(screen, kierunkowskaz_lewy, (740, 310), 0)
 
+    # Paliwo wykres
+    if fuelLvl == 0:
+        pass
+    if fuelLvl == 1:
+        screen.blit(paliwo1, (570, 790))
+    if fuelLvl == 2:
+        screen.blit(paliwo1, (570, 790))
+        screen.blit(paliwo2, (598, 791))
+    if fuelLvl == 3:
+        screen.blit(paliwo1, (570, 790))
+        screen.blit(paliwo2, (598, 791))
+        screen.blit(paliwo3, (626, 791))
+    if fuelLvl == 4:
+        screen.blit(paliwo1, (570, 790))
+        screen.blit(paliwo2, (598, 791))
+        screen.blit(paliwo3, (626, 791))
+        screen.blit(paliwo4, (654, 791))
+    if fuelLvl == 5:
+        screen.blit(paliwo1, (570, 790))
+        screen.blit(paliwo2, (598, 791))
+        screen.blit(paliwo3, (626, 791))
+        screen.blit(paliwo4, (654, 791))
+        screen.blit(paliwo5, (682, 791))
+    if fuelLvl == 6:
+        screen.blit(paliwo1, (570, 790))
+        screen.blit(paliwo2, (598, 791))
+        screen.blit(paliwo3, (626, 791))
+        screen.blit(paliwo4, (654, 791))
+        screen.blit(paliwo5, (682, 791))
+        screen.blit(paliwo6, (710, 791))
 
     screen.blit(gasPedal, gasPedalRect)
-    screen.blit(breakPedal, breakPedalRect)
 
     screen.blit(startStopButton, startStopButtonRect)
 
@@ -254,6 +295,12 @@ while True:
                 pracaSilnika.play(loops=-1)
                 isRunningSoundFlag = True
 
+            # Obnizenie poziomu paliwa o 1 co x tickow
+            counter += 1
+            if counter == counterFuel:
+                fuelLvl -= 1
+                counter = 0
+
 
             # Obsluga kierukowskazow
             kirunkowskaz_iterator += 1
@@ -272,7 +319,7 @@ while True:
 
             # Turning off procedure
             # Przycisk stop start -> Tutaj jest wyłaczanie auta
-            if startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0] and not isTurningOff:
+            if ((startStopButtonRect.collidepoint(mousePos) and pygame.mouse.get_pressed(3)[0]) and not isTurningOff) or (fuelLvl == 0 and not isTurningOff):
                 isTurningOff = True
                 time.sleep(0.2)
         else:
