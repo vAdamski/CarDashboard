@@ -124,7 +124,13 @@ paliwo5 = pygame.transform.scale(paliwo5, (30, 40))
 paliwo6 = pygame.image.load('source/PNG/line1_3.png')
 paliwo6 = pygame.transform.scale(paliwo6, (30, 40))
 
-
+# Ikonki eco, sport i comfort
+eco = pygame.image.load('source/PNG/eco.png')
+eco = pygame.transform.scale(eco, (300, 300))
+sport = pygame.image.load('source/PNG/sport.png')
+sport = pygame.transform.scale(sport, (300, 300))
+comfort = pygame.image.load('source/PNG/comfort.png')
+comfort = pygame.transform.scale(comfort, (300, 300))
 
 
 # Sound init
@@ -140,6 +146,7 @@ speedMin = 32
 speedMax = -210
 rpmMin = -5
 rpmMax = -230
+carMode = 0
 fuelLvl = 6
 counter = 0
 counterFuel = 150
@@ -200,6 +207,17 @@ while True:
             if event.key == pygame.K_RETURN and isRunning:
                 iconsState = drawError(iconsState)
 
+            # Zmiana trybu auta
+            if event.key == pygame.K_DOWN and isRunning:
+                carMode += 1
+                if carMode == 3:
+                    carMode = 0
+
+            if event.key == pygame.K_UP and isRunning:
+                carMode -= 1
+                if carMode == -1:
+                    carMode = 2
+
     mousePos = pygame.mouse.get_pos()
 
     # Draw all our elements
@@ -208,6 +226,9 @@ while True:
     screen.blit(clocksBackground, (0,0))
     blitRotate(screen, pointer_speed, (581,565), angle_speed)
     blitRotate(screen, pointer_rpm, (980, 558), angle_rpm)
+
+    screen.blit(gasPedal, gasPedalRect)
+    screen.blit(startStopButton, startStopButtonRect)
 
     # Ikonki
     if iconsState[0]:
@@ -234,39 +255,45 @@ while True:
         blitRotate(screen, kierunkowskaz_lewy, (740, 310), 0)
 
     # Paliwo wykres
-    if fuelLvl == 0:
-        pass
-    if fuelLvl == 1:
-        screen.blit(paliwo1, (570, 790))
-    if fuelLvl == 2:
-        screen.blit(paliwo1, (570, 790))
-        screen.blit(paliwo2, (598, 791))
-    if fuelLvl == 3:
-        screen.blit(paliwo1, (570, 790))
-        screen.blit(paliwo2, (598, 791))
-        screen.blit(paliwo3, (626, 791))
-    if fuelLvl == 4:
-        screen.blit(paliwo1, (570, 790))
-        screen.blit(paliwo2, (598, 791))
-        screen.blit(paliwo3, (626, 791))
-        screen.blit(paliwo4, (654, 791))
-    if fuelLvl == 5:
-        screen.blit(paliwo1, (570, 790))
-        screen.blit(paliwo2, (598, 791))
-        screen.blit(paliwo3, (626, 791))
-        screen.blit(paliwo4, (654, 791))
-        screen.blit(paliwo5, (682, 791))
-    if fuelLvl == 6:
-        screen.blit(paliwo1, (570, 790))
-        screen.blit(paliwo2, (598, 791))
-        screen.blit(paliwo3, (626, 791))
-        screen.blit(paliwo4, (654, 791))
-        screen.blit(paliwo5, (682, 791))
-        screen.blit(paliwo6, (710, 791))
+    if isRunning:
+        if fuelLvl == 0:
+            pass
+        if fuelLvl == 1:
+            screen.blit(paliwo1, (570, 790))
+        if fuelLvl == 2:
+            screen.blit(paliwo1, (570, 790))
+            screen.blit(paliwo2, (598, 791))
+        if fuelLvl == 3:
+            screen.blit(paliwo1, (570, 790))
+            screen.blit(paliwo2, (598, 791))
+            screen.blit(paliwo3, (626, 791))
+        if fuelLvl == 4:
+            screen.blit(paliwo1, (570, 790))
+            screen.blit(paliwo2, (598, 791))
+            screen.blit(paliwo3, (626, 791))
+            screen.blit(paliwo4, (654, 791))
+        if fuelLvl == 5:
+            screen.blit(paliwo1, (570, 790))
+            screen.blit(paliwo2, (598, 791))
+            screen.blit(paliwo3, (626, 791))
+            screen.blit(paliwo4, (654, 791))
+            screen.blit(paliwo5, (682, 791))
+        if fuelLvl == 6:
+            screen.blit(paliwo1, (570, 790))
+            screen.blit(paliwo2, (598, 791))
+            screen.blit(paliwo3, (626, 791))
+            screen.blit(paliwo4, (654, 791))
+            screen.blit(paliwo5, (682, 791))
+            screen.blit(paliwo6, (710, 791))
 
-    screen.blit(gasPedal, gasPedalRect)
-
-    screen.blit(startStopButton, startStopButtonRect)
+    # Ikony eco, sport, comfort
+    if isRunning:
+        if carMode == 0:
+            screen.blit(eco, (100, 350))
+        if carMode == 1:
+            screen.blit(sport, (100, 350))
+        if carMode == 2:
+            screen.blit(comfort, (100, 350))
 
     # Logika aplikacji
     # Engine start/stop
