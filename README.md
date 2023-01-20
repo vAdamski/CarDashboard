@@ -86,4 +86,4 @@ By program działa prawidłowo wymagane jest zainstalowanie załączonych w kodz
   pip install time
 ```
     
-#### Wymagane jest posiadanie ekranu o rozdizelczości Full HD (1920 x 1080 px)!!!
+#### Wymagane jest posiadanie ekranu o rozdizelczości Full HD (1920 x 1080 px) lub większej!!!
