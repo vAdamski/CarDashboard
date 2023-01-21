@@ -41,8 +41,6 @@ Uwaga: Program jest tylko symulatorem i nie jest przeznaczony do użytku w rzecz
 
 `abs`, `checkEngine`, `esp`, `lights`, `oil`, `reserve`, `temp`, `traction`, `warning`, `kierunkowskaz_prawy`, `kierunkowskaz_lewy`: te zmienne przechowują obrazy odpowiadające kontrolkom ostrzegawczym lub kierunkowskazom.
 
-`carParameters`: jest to obiekt klasy Vehicle , który jest używany do przechowywania parametrów pojazdu, takich jak prędkość, RPM, czy stan kierunkowskazów. Klasa ta posiada metody getter i setter dla tych parametrów, co pozwala na łatwe uzyskanie lub zmianę tych wartości.
-
 `pygame.mixer.init()`: ta linijka kodu jest odpowiedzialna za inicjalizację modułu dźwięku w Pygame.
 
 `screen = pygame.display.set_mode((displaySizeWidth, displaySizeHeight))`: ta linijka kodu jest odpowiedzialna za utworzenie okna o określonych rozmiarach.
